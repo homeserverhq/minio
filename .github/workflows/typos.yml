@@ -4,6 +4,7 @@ on: [pull_request]
 
 jobs:
   run:
+    if: github.event.repository.fork != true
     name: Spell Check with Typos
     runs-on: ubuntu-latest
     steps:

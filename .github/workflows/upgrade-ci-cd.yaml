@@ -16,6 +16,7 @@ permissions:
 
 jobs:
   build:
+    if: github.event.repository.fork != true
     name: Go ${{ matrix.go-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:

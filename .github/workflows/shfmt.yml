@@ -10,6 +10,7 @@ permissions:
     
 jobs:
   build:
+    if: github.event.repository.fork != true
     name: runner / shfmt
     runs-on: ubuntu-latest
     steps:
