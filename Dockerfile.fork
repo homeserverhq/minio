@@ -17,6 +17,10 @@ RUN --mount=type=cache,target=/go/pkg/mod \
       --ldflags "$(go run buildscripts/gen-ldflags.go)" \
       -o /out/minio .
 
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 go install github.com/minio/mc@v0.0.0-20250313080218-cf909e1063a9
+
 FROM alpine:3.20
 
 ARG RELEASE
@@ -29,9 +33,10 @@ LABEL name="MinIO" \
       summary="MinIO is a High Performance Object Storage, API compatible with Amazon S3 cloud storage service." \
       description="MinIO object storage is fundamentally different. Designed for performance and the S3 API, it is 100% open-source. MinIO is ideal for large, private cloud environments with stringent security requirements and delivers mission-critical availability across a diverse range of workloads."
 
-RUN apk add --no-cache ca-certificates && chmod -R 777 /usr/bin
+RUN apk add --no-cache ca-certificates curl && chmod -R 777 /usr/bin
 
 COPY --from=build /out/minio /usr/bin/minio
+COPY --from=build /go/bin/mc /usr/bin/mc
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 COPY dockerscripts/docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
