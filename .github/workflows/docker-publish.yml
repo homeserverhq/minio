@@ -12,10 +12,11 @@ concurrency:
 jobs:
   build-image:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 120
     permissions:
       contents: read
       packages: write
+      actions: write
 
     steps:
       - name: Checkout repository
@@ -52,7 +53,9 @@ jobs:
           context: .
           file: ./Dockerfile.fork
           push: true
-          platforms: linux/amd64,linux/arm64,linux/ppc64le
+          platforms: linux/amd64,linux/arm64
           build-args: RELEASE=${{ github.ref_name }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
